@@ -5,6 +5,7 @@ module SimpleFormImitation
       attr_reader :namespace, :defaults, :components
 
       def initialize(namespace, components, defaults = {})
+
         @namespace  = namespace
         @components = components
         @defaults   = defaults
@@ -20,7 +21,7 @@ module SimpleFormImitation
         content = "".html_safe
         options = input.options
 
-        # 拼接 options
+        # 拼接 content
         components.each do |component|
           # "component -> #<SimpleFormImitation::Wrappers::Leaf:0x0000000007f6af20>"
           # "component -> #<SimpleFormImitation::Wrappers::Leaf:0x0000000007f6ae30>"
@@ -32,7 +33,8 @@ module SimpleFormImitation
           # "component -> #<SimpleFormImitation::Wrappers::Leaf:0x0000000007f69f58>" # 一个
           # "component -> #<SimpleFormImitation::Wrappers::Single:0x0000000007f69cb0>" # 一组
           # "component -> #<SimpleFormImitation::Wrappers::Single:0x0000000007f69a08>" # 一组
-
+          # b.xxxx :aaa ,  aaa -> namespace
+          next if options[component.namespace] == false
           rendered = component.render(input)
           # safe_concat  如果 可用则用；否则用 concat
           # content.class -> ActiveSupport::SafeBuffer
@@ -46,9 +48,34 @@ module SimpleFormImitation
       end
 
       def wrap input, options, content
-        tag = @defaults[:tag]
 
-        input.template.content_tag(tag, content, options) # -> <tag class=opts>content</tag>
+        # "input ->  #<SimpleFormImitation::Inputs::StringInput:0x000000000bdee9b8>"
+        # "options -> {:label=>\"Your username please\", :error=>\"NAME is mandatory\"}"
+        # "content- > <label for=\"user_name\"><abbr title='required'>*</abbr> Your username please</label><input type=\"text\" name=\"user[name]\" id=\"user_name\" />"
+        return content if options[namespace] == false
+
+        tag = (namespace && options["#{namespace}_tag".to_sym]) || @defaults[:tag]
+        return content unless tag
+
+        klass = html_classes(input, options)
+
+        opts  = html_options(options)
+
+        opts[:class] = (klass << opts[:class]).join(' ').strip unless klass.empty?
+
+
+
+        # 给 class 拼接 class
+        input.template.content_tag(tag, content, opts) # -> <tag class=opts>content</tag>
+      end
+
+      def html_classes(input, options)
+        # dup 复制 但不复制拓展
+        @defaults[:class].dup
+      end
+
+      def html_options(options)
+        (@defaults[:html] || {}).merge(options["#{namespace}_html".to_sym] || {})
       end
 
     end
