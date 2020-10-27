@@ -49,6 +49,16 @@ module SimpleFormImitation
   mattr_accessor :error_method
   @@error_method = :first
 
+  # Define the way to render check boxes / radio buttons with labels.
+  #   inline: input + label (default)
+  #   nested: label > input
+  mattr_accessor :boolean_style
+  @@boolean_style = :inline
+
+
+  mattr_accessor :i18n_scope
+  @@i18n_scope = 'simple_form'
+
   # defaule errorr proc
   mattr_accessor :field_error_proc_imitation
   @@field_error_proc_imitation = proc do |html_tag, instance_tag|

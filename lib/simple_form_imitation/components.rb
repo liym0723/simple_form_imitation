@@ -12,5 +12,11 @@ module SimpleFormImitation
     autoload :LabelInput
     autoload :Labels
     autoload :Errors
+
+    autoload :Maxlength
+    autoload :Minlength
+    autoload :MinMax
+    autoload :Pattern
+    autoload :Placeholder
   end
 end

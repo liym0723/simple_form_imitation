@@ -12,7 +12,7 @@ module SimpleFormImitation
 
 
       def render(input)
-        # input.options.reverse_merge!(@options)
+        input.options.reverse_merge!(@options)
         super
       end
 

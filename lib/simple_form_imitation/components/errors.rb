@@ -45,6 +45,14 @@ module SimpleFormImitation
       def error_method
         options[:error_method] || SimpleFormImitation.error_method
       end
+
+      def has_value?
+        object && object.respond_to?(attribute_name) && object.send(attribute_name).present?
+      end
+
+      def valid?
+        !has_errors? && has_value?
+      end
     end
   end
 end

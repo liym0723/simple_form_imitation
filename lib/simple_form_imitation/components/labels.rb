@@ -19,7 +19,7 @@ module SimpleFormImitation
 
       def label(wrapper_options = nil)
 
-        label_options = label_html_options
+        label_options = merge_wrapper_options(label_html_options, wrapper_options)
 
         # "@builder -> #<SimpleFormImitation::FormBuilder:0x00000000094cd2c8>"
         # "attribute_name ->name"

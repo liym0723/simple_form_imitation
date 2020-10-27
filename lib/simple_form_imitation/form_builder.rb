@@ -11,8 +11,20 @@ module SimpleFormImitation
     extend MapType # 加载映射
     include SimpleFormImitation::Inputs # 加载inputs
 
-    map_type :string, to: SimpleFormImitation::Inputs::StringInput
+    ACTIONS = {
+        'create' => 'new',
+        'update' => 'edit'
+    }
 
+    map_type :string, to: SimpleFormImitation::Inputs::StringInput
+    map_type :text, to: SimpleFormImitation::Inputs::TextInput
+    map_type :file, to: SimpleFormImitation::Inputs::FileInput
+    map_type :password, to: SimpleFormImitation::Inputs::PasswordInput
+    map_type :hidden, to: SimpleFormImitation::Inputs::HiddenInput
+    map_type :datetime, to: SimpleFormImitation::Inputs::DateTimeInput
+    map_type :boolean, to: SimpleFormImitation::Inputs::BooleanInput
+
+    map_type :select, to: SimpleFormImitation::Inputs::CollectionSelectInput
 
     def initialize(*)
       super
@@ -125,6 +137,26 @@ module SimpleFormImitation
     # 查找包装器
     def find_wrapper input_type, options
       wrapper
+    end
+
+    # 从object_name混乱中提取模型名称
+    def lookup_model_names
+      @lookup_model_names ||= begin
+        # scan 重复将模式与self匹配，并返回匹配的子字符串数组
+        names = object_name.to_s.scan().flatten
+        names.each { |name| name.gsub!('_attributes', '') }
+        names.freeze # freeze 禁止修改, 冻结
+      end
+    end
+
+    # 查找 使用的操作(controller)。
+    def lookup_action
+      @lookup_action ||= begin
+        action = template.controller template.controller && template.controller.action_name
+        return unless action
+        action = action.to_s
+        ACTIONS[action] || action
+      end
     end
   end
 end
