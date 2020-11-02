@@ -3,7 +3,7 @@ module SimpleFormImitation
   module Inputs
     class CollectionSelectInput < CollectionInput
 
-      def input
+      def input(wrapper_options = nil)
         merged_input_options = merge_wrapper_options(input_html_options, wrapper_options)
         label_method,value_method = detect_collection_methods
 

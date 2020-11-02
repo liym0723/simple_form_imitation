@@ -7,7 +7,6 @@ module SimpleFormImitation
     class Base
       include ERB::Util # html_escape
       include ActionView::Helpers::TranslationHelper
-      extend I18nCache
 
       include SimpleFormImitation::Components::LabelInput
       include SimpleFormImitation::Components::Labels
@@ -168,6 +167,9 @@ module SimpleFormImitation
         SimpleFormImitation.i18n_scope
       end
 
+      def input_options
+        options
+      end
     end
   end
 end

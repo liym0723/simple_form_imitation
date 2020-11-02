@@ -59,6 +59,9 @@ module SimpleFormImitation
   mattr_accessor :i18n_scope
   @@i18n_scope = 'simple_form'
 
+  mattr_accessor :button_class
+  @@button_class = 'button'
+
   # defaule errorr proc
   mattr_accessor :field_error_proc_imitation
   @@field_error_proc_imitation = proc do |html_tag, instance_tag|

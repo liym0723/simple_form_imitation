@@ -78,6 +78,19 @@ module SimpleFormImitation
         (@defaults[:html] || {}).merge(options["#{namespace}_html".to_sym] || {})
       end
 
+      def find(name)
+        return self if namespace == name
+
+        @components.try(:each) do |c|
+          if c.is_a?(Symbol)
+            return nil if c == namespace
+          elsif value = c.find(name)
+            return value
+          end
+        end
+        nil
+      end
+
     end
   end
 end

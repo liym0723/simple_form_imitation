@@ -12,6 +12,7 @@ module SimpleFormImitation
     autoload :HiddenInput
     autoload :CollectionInput
     autoload :CollectionSelectInput
+    autoload :CollectionRadioButtonsInput
 
   end
 end

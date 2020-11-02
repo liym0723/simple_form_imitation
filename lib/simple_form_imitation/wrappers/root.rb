@@ -39,6 +39,10 @@ module SimpleFormImitation
         css if css && yield
       end
 
+      # Provide a fallback if name cannot be found. 找不到名称 提供备用
+      def find(name)
+        super || SimpleFormImitation::Wrappers::Many.new(name, [Leaf.new(name)])
+      end
     end
   end
 end

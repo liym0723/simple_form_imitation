@@ -25,6 +25,7 @@ module SimpleFormImitation
     map_type :boolean, to: SimpleFormImitation::Inputs::BooleanInput
 
     map_type :select, to: SimpleFormImitation::Inputs::CollectionSelectInput
+    map_type :radio_buttons, to: SimpleFormImitation::Inputs::CollectionRadioButtonsInput
 
     def initialize(*)
       super
@@ -157,6 +158,57 @@ module SimpleFormImitation
         action = action.to_s
         ACTIONS[action] || action
       end
+    end
+
+    def button(type, *args, &block)
+      # extract_options! 筛选出hash, 不存在则返回 {}
+      options = args.extract_options!.dup
+      options[:class] = [SimpleFormImitation.button_class, options[:class]].compact # 合并class
+      args << options
+      # 支持自定义 button
+      # "self -> #<SimpleForm::FormBuilder:0x00000000097cb808>"
+      if respond_to?(:"#{type}_button")
+        send(:"#{type}_button", *args, &block)
+        # module SimpleForm
+        #   class FormBuilder
+        #     def submit_button(*args, &block)
+        #       ActionController::Base.helpers.content_tag(:div, class: 'form-actions') do
+        #         submit(*args, &block)
+        #       end
+        #     end
+        #   end
+        # end
+      else
+        send(type, *args, &block)
+      end
+    end
+
+    def full_error(attribute_name, options = {})
+      options = options.dup
+      options[:error_prefix] ||= if object.class.respond_to?(:human_attribute_name)
+        # human_attribute_name I18n 获取对应文言
+        object.class.human_attribute_name(attribute_name.to_s)
+      else
+        # humanize
+        # 调整属性名称以显示给最终用户
+        # 1. 删除后缀 _id
+        # 2. 删除前 _
+        # 3. 用空格替换下划线
+        # 4. 除首字母外，所有单词均小写
+        # 5.大写第一个单词
+        attribute_name.to_s.humanize
+      end
+      error(attribute_name, options)
+    end
+
+    def error attribute_name, options = {}
+      options = options.dup
+      options[:error_html] = options.except(:error_tag, :error_prefix, :error_method)
+      column = find_attribute_column(attribute_name)
+      input_type = default_input_type(attribute_name, column, options)
+      wrapper.find(:error).
+          render(SimpleFormImitation::Inputs::Base.new(self, attribute_name, column, input_type, options))
+
     end
   end
 end
